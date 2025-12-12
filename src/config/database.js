@@ -1,4 +1,5 @@
 import pg from 'pg';
+import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -59,8 +60,39 @@ export const initDatabase = async () => {
     `);
 
     console.log('✅ Database tables initialized');
+    
+    // Seed admin user
+    await seedAdminUser();
   } catch (error) {
     console.error('❌ Error initializing database:', error);
+  }
+};
+
+// Seed hardcoded admin account
+const seedAdminUser = async () => {
+  try {
+    const adminEmail = 'admin@test.com';
+    const adminPassword = '12345678';
+    
+    // Check if admin exists
+    const existingAdmin = await pool.query(
+      'SELECT * FROM users WHERE email = $1',
+      [adminEmail]
+    );
+    
+    if (existingAdmin.rows.length === 0) {
+      // Create admin
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+      await pool.query(
+        'INSERT INTO users (email, password, full_name, role) VALUES ($1, $2, $3, $4)',
+        [adminEmail, hashedPassword, 'Administrator', 'admin']
+      );
+      console.log('✅ Admin user created (admin@test.com)');
+    } else {
+      console.log('ℹ️ Admin user already exists');
+    }
+  } catch (error) {
+    console.error('❌ Error seeding admin:', error.message);
   }
 };
 
