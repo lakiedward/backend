@@ -4,7 +4,10 @@ import { pool } from '../config/database.js';
 export const getAllShops = async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT s.*, u.full_name as owner_name, u.email as owner_email,
+      SELECT s.id, s.user_id, s.name, s.specialty, s.description, s.location,
+             COALESCE(s.image_url, 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=300&fit=crop') as image_url,
+             s.is_active, s.created_at, s.updated_at,
+             u.full_name as owner_name, u.email as owner_email,
              (SELECT COUNT(*) FROM products p WHERE p.shop_id = s.id AND p.is_available = true) as product_count
       FROM shops s
       JOIN users u ON s.user_id = u.id
@@ -25,7 +28,10 @@ export const getShopById = async (req, res) => {
     
     // Get shop details
     const shopResult = await pool.query(`
-      SELECT s.*, u.full_name as owner_name, u.email as owner_email, u.phone as owner_phone
+      SELECT s.id, s.user_id, s.name, s.specialty, s.description, s.location,
+             COALESCE(s.image_url, 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=300&fit=crop') as image_url,
+             s.is_active, s.created_at, s.updated_at,
+             u.full_name as owner_name, u.email as owner_email, u.phone as owner_phone
       FROM shops s
       JOIN users u ON s.user_id = u.id
       WHERE s.id = $1

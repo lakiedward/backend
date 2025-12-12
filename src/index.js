@@ -7,6 +7,7 @@ import shopRoutes from './routes/shopRoutes.js';
 import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 import { pool } from './config/database.js';
 
 dotenv.config();
@@ -29,6 +30,7 @@ app.use('/api/producers', producerRoutes);
 app.use('/api/shops', shopRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
